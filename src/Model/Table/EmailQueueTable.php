@@ -53,10 +53,13 @@ class EmailQueueTable extends Table
     {
         $defaults = [
             'subject' => '',
+            'cc' => '',
+            'bcc' => '',
             'send_at' => new FrozenTime('now'),
             'template' => 'default',
             'layout' => 'default',
             'theme' => '',
+            'helpers' => '',
             'format' => 'both',
             'headers' => [],
             'template_vars' => $data,
@@ -176,6 +179,7 @@ class EmailQueueTable extends Table
         $schema->setColumnType('template_vars', $type);
         $schema->setColumnType('headers', $type);
         $schema->setColumnType('attachments', $type);
+        $schema->setColumnType('helpers', $type);
 
         return $schema;
     }
