@@ -63,6 +63,7 @@ class SenderShell extends Shell
 
         $count = count($emails);
         foreach ($emails as $e) {
+
             $configName = $e->config === 'default' ? $this->params['config'] : $e->config;
             $template = $e->template === 'default' ? $this->params['template'] : $e->template;
             $layout = $e->layout === 'default' ? $this->params['layout'] : $e->layout;
@@ -98,6 +99,12 @@ class SenderShell extends Shell
                     ->setMessageId(false)
                     ->setReturnPath($email->getFrom())
                     ->send();
+
+                // save message to table
+                if (isset($sent['message'])) {
+                    $e->message = $sent['message'];
+                    $emailQueue->save($e);
+                }
 
             } catch (SocketException $exception) {
                 $this->err($exception->getMessage());
