@@ -36,8 +36,8 @@ class EmailQueueTable extends Table
     /**
      * Stores a new email message in the queue.
      *
-     * @param mixed $to      email or array of emails as recipients
-     * @param array $data    associative array of variables to be passed to the email template
+     * @param mixed $to email or array of emails as recipients
+     * @param array $data associative array of variables to be passed to the email template
      * @param array $options list of options for email sending. Possible keys:
      *
      * - subject : Email's subject
@@ -76,7 +76,7 @@ class EmailQueueTable extends Table
 
         $emails = $this->newEntities($emails);
 
-        return $this->connection()->transactional(function () use ($emails) {
+        return $this->getConnection()->transactional(function () use ($emails) {
             $failure = collection($emails)
                 ->map(function ($email) {
                     return $this->save($email);
@@ -90,18 +90,18 @@ class EmailQueueTable extends Table
     /**
      * Returns a list of queued emails that needs to be sent.
      *
-     * @param int $size, number of unset emails to return
+     * @param int $size , number of unset emails to return
      *
      * @return array list of unsent emails
      */
     public function getBatch($size = 10)
     {
-        return $this->connection()->transactional(function () use ($size) {
+        return $this->getConnection()->transactional(function () use ($size) {
             $emails = $this->find()
                 ->where([
                     $this->aliasField('sent') => false,
-                    $this->aliasField('send_tries').' <=' => 3,
-                    $this->aliasField('send_at').' <=' => new FrozenTime('now'),
+                    $this->aliasField('send_tries') . ' <=' => 3,
+                    $this->aliasField('send_at') . ' <=' => new FrozenTime('now'),
                     $this->aliasField('locked') => false,
                 ])
                 ->limit($size)
@@ -142,7 +142,7 @@ class EmailQueueTable extends Table
     /**
      * Marks an email from the queue as sent.
      *
-     * @param string $id, queued email id
+     * @param string $id , queued email id
      *
      * @return bool
      */
@@ -154,7 +154,7 @@ class EmailQueueTable extends Table
     /**
      * Marks an email from the queue as failed, and increments the number of tries.
      *
-     * @param string $id, queued email id
+     * @param string $id , queued email id
      *
      * @return bool
      */
@@ -173,10 +173,10 @@ class EmailQueueTable extends Table
     protected function _initializeSchema(Schema $schema)
     {
         $type = Configure::read('EmailQueue.serialization_type') ?: 'email_queue.serialize';
-        $schema->columnType('template_vars', $type);
-        $schema->columnType('headers', $type);
-        $schema->columnType('attachments', $type);
-        
+        $schema->setColumnType('template_vars', $type);
+        $schema->setColumnType('headers', $type);
+        $schema->setColumnType('attachments', $type);
+
         return $schema;
     }
 }

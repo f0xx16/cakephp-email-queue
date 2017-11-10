@@ -15,7 +15,7 @@ class SenderShell extends Shell
     {
         $parser = parent::getOptionParser();
         $parser
-            ->description('Sends queued emails in a batch')
+            ->setDescription('Sends queued emails in a batch')
             ->addOption('limit', array(
                 'short' => 'l',
                 'help' => 'How many emails should be sent in this batch?',
@@ -66,38 +66,39 @@ class SenderShell extends Shell
             $configName = $e->config === 'default' ? $this->params['config'] : $e->config;
             $template = $e->template === 'default' ? $this->params['template'] : $e->template;
             $layout = $e->layout === 'default' ? $this->params['layout'] : $e->layout;
-            $headers = empty($e->headers) ? array() : (array) $e->headers;
-            $theme = empty($e->theme) ? '' : (string) $e->theme;
+            $headers = empty($e->headers) ? array() : (array)$e->headers;
+            $theme = empty($e->theme) ? '' : (string)$e->theme;
 
             try {
                 $email = $this->_newEmail($configName);
 
                 if (!empty($e->from_email) && !empty($e->from_name)) {
-                    $email->from($e->from_email, $e->from_name);
+                    $email->setFrom($e->from_email, $e->from_name);
                 }
 
-                $transport = $email->transport();
+                $transport = $email->getTransport();
 
-                if ($transport && $transport->config('additionalParameters')) {
-                    $from = key($email->from());
-                    $transport->config(['additionalParameters' => "-f $from"]);
+                if ($transport && $transport->getConfig('additionalParameters')) {
+                    $from = key($email->getFrom());
+                    $transport->setConfig(['additionalParameters' => "-f $from"]);
                 }
-		
+
                 if (!empty($e->attachments)) {
-                    $email->attachments($e->attachments);
+                    $email->setAttachments($e->attachments);
                 }
-		
+
                 $sent = $email
-                    ->to($e->email)
-                    ->subject($e->subject)
-                    ->template($template, $layout)
-                    ->emailFormat($e->format)
+                    ->setTo($e->email)
+                    ->setSubject($e->subject)
+                    ->setTemplate($template, $layout)
+                    ->setEmailFormat($e->format)
                     ->addHeaders($headers)
-                    ->theme($theme)
-                    ->viewVars($e->template_vars)
-                    ->messageId(false)
-                    ->returnPath($email->from())
+                    ->setTheme($theme)
+                    ->setViewVars($e->template_vars)
+                    ->setMessageId(false)
+                    ->setReturnPath($email->getFrom())
                     ->send();
+
             } catch (SocketException $exception) {
                 $this->err($exception->getMessage());
                 $sent = false;
@@ -105,10 +106,10 @@ class SenderShell extends Shell
 
             if ($sent) {
                 $emailQueue->success($e->id);
-                $this->out('<success>Email '.$e->id.' was sent</success>');
+                $this->out('<success>Email ' . $e->id . ' was sent</success>');
             } else {
                 $emailQueue->fail($e->id);
-                $this->out('<error>Email '.$e->id.' was not sent</error>');
+                $this->out('<error>Email ' . $e->id . ' was not sent</error>');
             }
         }
         if ($count > 0)

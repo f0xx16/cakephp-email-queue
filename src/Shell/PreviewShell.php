@@ -34,7 +34,7 @@ class PreviewShell extends Shell
                 $this->in('Hit a key to continue');
                 $this->clear();
             }
-            $this->out('Email :'.$email['EmailQueue']['id']);
+            $this->out('Email :' . $email['EmailQueue']['id']);
             $this->preview($email);
         }
     }
@@ -44,25 +44,25 @@ class PreviewShell extends Shell
         $configName = $e['config'];
         $template = $e['template'];
         $layout = $e['layout'];
-        $headers = empty($e['headers']) ? [] : (array) $e['headers'];
-        $theme = empty($e['theme']) ? '' : (string) $e['theme'];
+        $headers = empty($e['headers']) ? [] : (array)$e['headers'];
+        $theme = empty($e['theme']) ? '' : (string)$e['theme'];
 
         $email = new Email($configName);
-	
+
         if (!empty($e['attachments'])) {
-            $email->attachments($e['attachments']);
+            $email->setAttachments($e['attachments']);
         }
-	
-        $email->transport('Debug')
-            ->to($e['email'])
-            ->subject($e['subject'])
-            ->template($template, $layout)
-            ->emailFormat($e['format'])
+
+        $email->setTransport('Debug')
+            ->setTo($e['email'])
+            ->setSubject($e['subject'])
+            ->setTemplate($template, $layout)
+            ->setEmailFormat($e['format'])
             ->addHeaders($headers)
-            ->theme($theme)
-            ->messageId(false)
-            ->returnPath($email->from())
-            ->viewVars($e['template_vars']);
+            ->setTheme($theme)
+            ->setMessageId(false)
+            ->setReturnPath($email->from())
+            ->setViewVars($e['template_vars']);
 
         $return = $email->send();
 
