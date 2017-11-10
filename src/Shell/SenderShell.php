@@ -84,8 +84,24 @@ class SenderShell extends Shell
                     $transport->setConfig(['additionalParameters' => "-f $from"]);
                 }
 
+                // set attachments
                 if (!empty($e->attachments)) {
                     $email->setAttachments($e->attachments);
+                }
+
+                // set helpers
+                if (!empty($e->helpers)) {
+                    $email->setHelpers($e->helpers);
+                }
+
+                // set cc
+                if (!empty($e->cc)) {
+                    $email->setCC($e->cc);
+                }
+
+                // set bcc
+                if (!empty($e->bcc)) {
+                    $email->setBcc($e->bcc);
                 }
 
                 $sent = $email
