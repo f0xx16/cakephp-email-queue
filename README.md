@@ -59,6 +59,7 @@ and queue a new one by storing the correct data:
  * `headers`: A key-value list of headers to send in the email
  * `theme`: The View Theme to find the email templates
  * `config` : the name of the email config to be used for sending
+ * `attachments` : string or array with attachments (see CakePHP Core: Cake\Mailer\Email->setAttachments())
 
 ### Previewing emails
 
