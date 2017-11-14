@@ -104,6 +104,10 @@ class SenderShell extends Shell
                     $email->setBcc($e->bcc);
                 }
 
+                if (!empty($e->attachments)) {
+                    $email->attachments($e->attachments);
+                }
+
                 $sent = $email
                     ->setTo($e->email)
                     ->setSubject($e->subject)
