@@ -51,11 +51,15 @@ and queue a new one by storing the correct data:
 - Second arguments is an array of view variables to be passed to the
   email template
 - Third arguments is an array of options, possible options are
+
+ * `cc` : Email's cc (optional)
+ * `bcc` : Email's bcc (optional)
  * `subject` : Email's subject
  * `send_at` : date time sting representing the time this email should be sent at (in UTC)
  * `template` :  the name of the element to use as template for the email message
  * `layout` : the name of the layout to be used to wrap email message
  * `format` : Type of template to use (html, text or both)
+ * `helpers` : array with template helpers 
  * `headers`: A key-value list of headers to send in the email
  * `theme`: The View Theme to find the email templates
  * `config` : the name of the email config to be used for sending
