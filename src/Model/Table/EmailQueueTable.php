@@ -51,6 +51,8 @@ class EmailQueueTable extends Table
      */
     public function enqueue($to, array $data, array $options = [])
     {
+        $project = Configure::read('EmailQueue.project') ?: 'default';
+
         $defaults = [
             'subject' => '',
             'cc' => '',
@@ -64,6 +66,7 @@ class EmailQueueTable extends Table
             'headers' => [],
             'template_vars' => $data,
             'config' => 'default',
+            'project' => $project,
             'attachments' => []
         ];
 
@@ -97,16 +100,24 @@ class EmailQueueTable extends Table
      *
      * @return array list of unsent emails
      */
-    public function getBatch($size = 10)
+    public function getBatch($size = 10, $project = 'default')
     {
-        return $this->getConnection()->transactional(function () use ($size) {
+        return $this->getConnection()->transactional(function () use ($size, $project) {
             $emails = $this->find()
                 ->where([
                     $this->aliasField('sent') => false,
                     $this->aliasField('send_tries') . ' <=' => 3,
                     $this->aliasField('send_at') . ' <=' => new FrozenTime('now'),
                     $this->aliasField('locked') => false,
-                ])
+                ]);
+
+            if ($project !== 'default') {
+                $emails->where([
+                    'project' => $project
+                ]);
+            }
+
+            $emails
                 ->limit($size)
                 ->order([$this->aliasField('created') => 'ASC']);
 
