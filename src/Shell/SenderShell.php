@@ -41,6 +41,11 @@ class SenderShell extends Shell
                 'help' => 'Name of email settings to use as defined in email.php',
                 'default' => 'default',
             ))
+            ->addOption('project', array(
+                'short' => 'p',
+                'help' => 'Name of project',
+                'default' => 'default',
+            ))
             ->addSubCommand('clearLocks', array(
                 'help' => 'Clears all locked emails in the queue, useful for recovering from crashes',
             ));
@@ -57,9 +62,15 @@ class SenderShell extends Shell
             sleep(rand(0, $this->params['stagger']));
         }
 
+        $project = Configure::read('EmailQueue.project') ?: 'default';
+
+        if ($this->params['project'] !== 'default') {
+            $project = $this->params['project'];
+        }
+
         Configure::write('App.baseUrl', '/');
         $emailQueue = TableRegistry::get('EmailQueue', ['className' => EmailQueueTable::class]);
-        $emails = $emailQueue->getBatch($this->params['limit']);
+        $emails = $emailQueue->getBatch($this->params['limit'], $project);
 
         $count = count($emails);
         foreach ($emails as $e) {
